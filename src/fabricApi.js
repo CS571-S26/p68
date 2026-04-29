@@ -1,11 +1,8 @@
-const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY;
+const WORKER_URL = "https://fabric.zhengtengyi.workers.dev";
+
 const API_HEADERS = {
   "Content-Type": "application/json",
-  "x-api-key": ANTHROPIC_API_KEY,
-  "anthropic-version": "2023-06-01",
-  "anthropic-dangerous-direct-browser-access": "true",
 };
-// change4
 
 const ANALYSIS_SYSTEM = `You are a professional textile analyst. Analyze the fabric or garment in the image.
 Return ONLY a valid JSON object with no extra text, markdown, or code fences. The JSON must have:
@@ -35,7 +32,7 @@ export async function analyzeFabric(imageDataUrl) {
   const [header, base64] = imageDataUrl.split(",");
   const mediaType = header.match(/:(.*?);/)[1];
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetch(WORKER_URL, {
     method: "POST",
     headers: API_HEADERS,
     body: JSON.stringify({
@@ -67,7 +64,7 @@ export async function analyzeFabric(imageDataUrl) {
 }
 
 export async function getRecommendations(analysisResult) {
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetch(WORKER_URL, {
     method: "POST",
     headers: API_HEADERS,
     body: JSON.stringify({
