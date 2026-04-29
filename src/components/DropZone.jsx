@@ -6,12 +6,40 @@ export default function DropZone({ onImage }) {
   const [dragging, setDragging] = useState(false);
   const [converting, setConverting] = useState(false);
 
+  async function compressImage(file, maxMB) {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+        const maxPx = 1920;
+        if (width > maxPx || height > maxPx) {
+          const ratio = Math.min(maxPx / width, maxPx / height);
+          width = Math.round(width * ratio);
+          height = Math.round(height * ratio);
+        }
+        canvas.width = width;
+        canvas.height = height;
+        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+        let quality = 0.85;
+        let dataUrl = canvas.toDataURL("image/jpeg", quality);
+        while (dataUrl.length > maxMB * 1024 * 1024 * 1.37 && quality > 0.3) {
+          quality -= 0.1;
+          dataUrl = canvas.toDataURL("image/jpeg", quality);
+        }
+        resolve(dataUrl);
+      };
+      img.src = url;
+    });
+  }
+
   async function handleFile(file) {
     if (!file) return;
 
     let processedFile = file;
 
-    // 自动转换 HEIC/HEIF 格式
     const isHeic =
       file.type === "image/heic" ||
       file.type === "image/heif" ||
@@ -22,11 +50,7 @@ export default function DropZone({ onImage }) {
       setConverting(true);
       try {
         const heic2any = (await import("heic2any")).default;
-        const blob = await heic2any({
-          blob: file,
-          toType: "image/jpeg",
-          quality: 0.85,
-        });
+        const blob = await heic2any({ blob: file, toType: "image/jpeg", quality: 0.85 });
         processedFile = new File(
           [blob],
           file.name.replace(/\.(heic|heif)$/i, ".jpg"),
@@ -43,13 +67,11 @@ export default function DropZone({ onImage }) {
 
     if (!processedFile.type.startsWith("image/")) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target.result;
-      setPreview(dataUrl);
-      onImage(dataUrl, processedFile);
-    };
-    reader.readAsDataURL(processedFile);
+    setConverting(true);
+    const dataUrl = await compressImage(processedFile, 4);
+    setConverting(false);
+    setPreview(dataUrl);
+    onImage(dataUrl, processedFile);
   }
 
   function handleChange(e) {
@@ -107,8 +129,8 @@ export default function DropZone({ onImage }) {
 
       {converting ? (
         <div className="dropzone-inner">
-          <div className="spinner-ring" role="status" aria-label="Converting image…" />
-          <p className="dropzone-title">Converting image…</p>
+          <div className="spinner-ring" role="status" aria-label="Processing image…" />
+          <p className="dropzone-title">Processing image…</p>
         </div>
       ) : preview ? (
         <>
