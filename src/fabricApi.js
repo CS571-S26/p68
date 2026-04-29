@@ -5,7 +5,7 @@ const API_HEADERS = {
   "anthropic-version": "2023-06-01",
   "anthropic-dangerous-direct-browser-access": "true",
 };
-// change2
+// change3
 const ANALYSIS_SYSTEM = `You are a professional textile analyst. Analyze the fabric or garment in the image.
 Return ONLY a valid JSON object with no extra text, markdown, or code fences. The JSON must have:
 {
