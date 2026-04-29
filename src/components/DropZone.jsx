@@ -4,17 +4,52 @@ export default function DropZone({ onImage }) {
   const inputRef = useRef(null);
   const [preview, setPreview] = useState(null);
   const [dragging, setDragging] = useState(false);
+  const [converting, setConverting] = useState(false);
 
-  function handleFile(file) {
-    if (!file || !file.type.startsWith("image/")) return;
+  async function handleFile(file) {
+    if (!file) return;
+
+    let processedFile = file;
+
+    // 自动转换 HEIC/HEIF 格式
+    const isHeic =
+      file.type === "image/heic" ||
+      file.type === "image/heif" ||
+      file.name.toLowerCase().endsWith(".heic") ||
+      file.name.toLowerCase().endsWith(".heif");
+
+    if (isHeic) {
+      setConverting(true);
+      try {
+        const heic2any = (await import("heic2any")).default;
+        const blob = await heic2any({
+          blob: file,
+          toType: "image/jpeg",
+          quality: 0.85,
+        });
+        processedFile = new File(
+          [blob],
+          file.name.replace(/\.(heic|heif)$/i, ".jpg"),
+          { type: "image/jpeg" }
+        );
+      } catch (err) {
+        console.error("HEIC conversion failed:", err);
+        alert("Could not convert this image. Please use a JPG or PNG.");
+        setConverting(false);
+        return;
+      }
+      setConverting(false);
+    }
+
+    if (!processedFile.type.startsWith("image/")) return;
+
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataUrl = e.target.result;
       setPreview(dataUrl);
-      // Pass both the data URL and the raw file
-      onImage(dataUrl, file);
+      onImage(dataUrl, processedFile);
     };
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(processedFile);
   }
 
   function handleChange(e) {
@@ -70,7 +105,12 @@ export default function DropZone({ onImage }) {
         id="fabric-image-input"
       />
 
-      {preview ? (
+      {converting ? (
+        <div className="dropzone-inner">
+          <div className="spinner-ring" role="status" aria-label="Converting image…" />
+          <p className="dropzone-title">Converting image…</p>
+        </div>
+      ) : preview ? (
         <>
           <img
             src={preview}
@@ -85,7 +125,7 @@ export default function DropZone({ onImage }) {
         <div className="dropzone-inner">
           <div className="dropzone-icon" aria-hidden="true">↑</div>
           <p className="dropzone-title">Drop fabric image here</p>
-          <p className="dropzone-sub">PNG, JPG up to 20 MB</p>
+          <p className="dropzone-sub">PNG, JPG, HEIC up to 20 MB</p>
         </div>
       )}
     </div>
