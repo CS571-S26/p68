@@ -58,8 +58,11 @@ export async function analyzeFabric(imageDataUrl) {
   });
 
   if (!response.ok) throw new Error(`API error: ${response.status}`);
-  const data = await response.json();
-  const text = data.content.map((c) => c.text || "").join("");
+const data = await response.json();
+if (!data.content) {
+  throw new Error(`API error: ${JSON.stringify(data)}`);
+}
+const text = data.content.map((c) => c.text || "").join("");
   return JSON.parse(text.replace(/```json|```/g, "").trim());
 }
 
@@ -81,7 +84,8 @@ export async function getRecommendations(analysisResult) {
   });
 
   if (!response.ok) throw new Error(`API error: ${response.status}`);
-  const data = await response.json();
-  const text = data.content.map((c) => c.text || "").join("");
+const data = await response.json();
+if (!data.content) throw new Error(`API error: ${JSON.stringify(data)}`);
+const text = data.content.map((c) => c.text || "").join("");
   return JSON.parse(text.replace(/```json|```/g, "").trim());
 }
