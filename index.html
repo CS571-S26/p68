@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <script>
+  (function(){
+    var p = window.location.search.match(/[?&]p=([^&]+)/);
+    if (p) {
+      window.history.replaceState(null, null, '/p68' + decodeURIComponent(p[1]));
+    }
+  })();
+</script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FabricLens — AI Fabric Intelligence</title>
