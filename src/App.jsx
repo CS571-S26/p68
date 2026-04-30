@@ -6,11 +6,10 @@ import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import HomePage from "./pages/HomePage";
 import RecommendPage from "./pages/RecommendPage";
-import AboutPage from "./pages/AboutPage";
+import ShopPage from "./pages/ShopPage";
 import NotFoundPage from "./pages/NotFoundPage";
 
 export default function App() {
-  // Shared analysis result state — passed from HomePage to RecommendPage
   const [analysisResult, setAnalysisResult] = useState(null);
 
   return (
@@ -19,10 +18,10 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage setAnalysisResult={setAnalysisResult} />} />
         <Route path="/recommend" element={<RecommendPage analysisResult={analysisResult} />} />
-        <Route path="/about" element={<AboutPage />} />
+        <Route path="/shop" element={<ShopPage analysisResult={analysisResult} />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
       <Footer />
     </BrowserRouter>
   );
-}
+}//
