@@ -14,18 +14,13 @@ export default function NavBar() {
         <Navbar.Toggle aria-controls="main-nav" aria-label="Toggle navigation" />
         <Navbar.Collapse id="main-nav">
           <Nav className="ms-auto" style={{ gap: "0.25rem" }}>
-            <Nav.Link as={NavLink} to="/" end>
-              Analyze
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/recommend">
-              Recommend
-            </Nav.Link>
-            <Nav.Link as={NavLink} to="/about">
-              About
-            </Nav.Link>
+            <Nav.Link as={NavLink} to="/" end>Analyze</Nav.Link>
+            <Nav.Link as={NavLink} to="/recommend">Recommend</Nav.Link>
+            <Nav.Link as={NavLink} to="/shop">Shop</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
   );
 }
+//
