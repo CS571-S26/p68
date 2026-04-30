@@ -62,15 +62,7 @@ function ProductCard({ product, matchScore, matchReason }) {
           <span style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text)" }}>
             {product.price}
           </span>
-          <button style={{
-            padding: "0.35rem 0.9rem",
-            background: "var(--text)", color: "var(--bg)",
-            border: "none", borderRadius: "var(--radius-sm)",
-            fontSize: "0.78rem", fontWeight: 600,
-            cursor: "pointer", fontFamily: "var(--font)",
-          }}>
-            Add to Cart
-          </button>
+          
         </div>
       </div>
     </article>
