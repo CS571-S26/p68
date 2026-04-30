@@ -90,6 +90,14 @@ export default function ResultPanel({ status, result }) {
         <p style={{ fontSize: "0.72rem", color: "var(--text-tertiary)", textAlign: "center" }}>
           Based on your fabric analysis
         </p>
+
+        <Button
+  variant="outline-dark"
+  onClick={() => navigate("/shop")}
+  style={{ width: "100%", marginBottom: "0.5rem" }}
+>
+  Find Similar in Shop →
+</Button>
       </div>
     </div>
   );
